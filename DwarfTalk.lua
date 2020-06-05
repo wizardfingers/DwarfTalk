@@ -1,3 +1,5 @@
+-- DwarfTalk, translate your mundane manling words into fancy dwarf words.
+-- Ported from Baobab's Warhammer addon by wizardfingers
 -- Helpers
 local DwarfTalk_HasValue
 DwarfTalk_HasValue = function (tab, val)
