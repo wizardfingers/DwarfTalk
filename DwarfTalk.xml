@@ -3,12 +3,17 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="DwarfTalk.lua"/>
+
 	<Frame name="DwarfTalk">
 		<Scripts>
-			<OnLoad function="DwarfTalk_OnLoad" />
-			<!-- <OnEvent>
-				if (event == "VARIABLES_LOADED") then Dwarvenizer_onLoad(); end
-			</OnEvent> -->
+			<OnLoad>
+                self:RegisterEvent("VARIABLES_LOADED");
+            </OnLoad>
+			<OnEvent>
+				if (event == "VARIABLES_LOADED") then 
+                    DwarfTalk_OnLoad(); 
+                end
+			</OnEvent>
 		</Scripts>
 	</Frame>
 </Ui>

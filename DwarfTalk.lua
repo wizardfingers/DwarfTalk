@@ -1,5 +1,26 @@
+-- Helpers
+local DwarfTalk_HasValue
+DwarfTalk_HasValue = function (tab, val)
+    for key, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+    return false
+end
+local DwarfTalk_GetKey
+DwarfTalk_GetKey = function (tab, val)
+    for key, value in ipairs(tab) do
+        if value == val then
+            return key
+        end
+    end
+    return nil
+end
+
+-- DwarfTalk
 DwarfTalk = {
-    version = "0.1",
+    version = "0.2",
     TomeOfDwarven = {
         ["a glass of"] = "a pint o'",
         ["a man"] = "a manling",
@@ -505,31 +526,79 @@ DwarfTalk.Translate = function (original)
 end
 
 DwarfTalk_OnLoad = function ()
+    if not DwarfTalk_Config then
+        DwarfTalk_Config = {
+            ON = true,
+            DISABLEDCHANNELS = {}
+        }
+    end
+    
     SLASH_DWARFTALK1 = "/dt"
     SLASH_DWARFTALK2 = "/dwarftalk"
-    SlashCmdList["DWARFTALK"] = function (msg)
-        if not msg or string.format("%s", string.lower(msg)) == "help" then
-            print("DwarfTalk\nTurn on or off globally with /dwarftalk <on/off>\nDisable a channel with /dwarftalk disable <CHANNEL_NAME>\nEnable a disabled channel with /dwarftalk enable <CHANNEL_NAME>\nList all disabled channels with /dwarftalk disabled")
+    SlashCmdList["DWARFTALK"] = function (option)
+        local options = {}
+        local searchResult = { string.match(option,"^(%S*)%s*(.-)$") }
+        for i, v in pairs(searchResult) do
+            if (v ~= nil and v ~= "") then
+                options[i] = string.lower(v)
+            end
+        end
+
+        if #options == 0 or options[1] == "help" then
+            DwarfTalk_Config.DISABLEDCHANNELS = {}
+            local formateddt = "|cFF00FF00/dt|r"
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.."\n|r"..formateddt.." |cFFFFEE00on|r - enable DwarfTalk\n"..formateddt.." |cFFFFEE00off|r - disable DwarfTalk\n"..formateddt.." |cFFFFEE00list|r - list disabled channels\n"..formateddt.."|r |cFFFFEE00disable|r |cFFFF0000CHANNEL_NAME|r - disable a channel\n"..formateddt.." |cFFFFEE00enable|r |cFFFF0000CHANNEL_NAME|r - enable a disabled channel.")
+        elseif options[1] == "on" then
+            DEFAULT_CHAT_FRAME:AddMessage("DwarfTalk is now ACTIVE.")
+        elseif options[1] == "off" then
+            DEFAULT_CHAT_FRAME:AddMessage("DwarfTalk is now INACTIVE.")
+        elseif options[1] == "list" then
+            DEFAULT_CHAT_FRAME:AddMessage("Disabled Channels:")
+            for key, value in ipairs(DwarfTalk_Config.DISABLEDCHANNELS) do
+                DEFAULT_CHAT_FRAME:AddMessage(">"..value)
+            end
+        elseif #options == 2 then
+            local option2 = string.upper(options[2])
+            if options[1] == "disable" then
+                if not DwarfTalk_HasValue(DwarfTalk_Config.DISABLEDCHANNELS, option2) then
+                    table.insert(DwarfTalk_Config.DISABLEDCHANNELS, option2)
+                end
+                DEFAULT_CHAT_FRAME:AddMessage("Disabled |cFFFF0000"..option2.."|r")
+            elseif options[1] == "enable" then
+                local index = DwarfTalk_GetKey(DwarfTalk_Config.DISABLEDCHANNELS, option2)
+                
+                if index ~= nil then
+                    table.remove(DwarfTalk_Config.DISABLEDCHANNELS, index)
+                end
+                DEFAULT_CHAT_FRAME:AddMessage("Enabled |cFF00FF00"..option2.."|r")
+            end
         end
     end
-
-    print("DwarfTalk loaded and ready to translate!");
+    local status = "|cFF00FF00ON|r"
+    if not DwarfTalk_Config.ON then
+        status = "|cFFFF0000OFF|r"
+    end
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.." |r loaded -- status:"..status);
 end
 
--- local SendChatMessageAsADwarf
--- local SendChatMessageHook
--- SendChatMessageAsADwarf = function (msg, system, language, channel)
---     if (not msg) then
---         msg = ""
---     end
---     if (not system) then
---         system = "SAY"
---     end
+local DwarfTalk_SendChatMessage
+local DwarfTalk_SendChatMessageHook
+DwarfTalk_SendChatMessage = function (msg, system, language, channel)
+    if DwarfTalk_Config.ON then
+        if (not msg) then
+            msg = ""
+        end
+        if (not system) then
+            system = "SAY"
+        end
+        if (not DwarfTalk_HasValue(DwarfTalk_Config.DISABLEDCHANNELS, string.upper(system))) then
+            msg = DwarfTalk.Translate(msg)
+        end
+    end
+    DwarfTalk_SendChatMessageHook(msg, system, language, channel)
+end
 
---     SendChatMessageHook(DwarfTalk.Translate(msg), system, language, channel)
--- end
-
--- if (SendChatMessage ~= SendChatMessageAsADwarf) then
---     SendChatMessageHook = SendChatMessage
---     SendChatMessage = SendChatMessageAsADwarf
--- end
+if (SendChatMessage ~= DwarfTalk_SendChatMessage) then
+    DwarfTalk_SendChatMessageHook = SendChatMessage
+    SendChatMessage = DwarfTalk_SendChatMessage
+end
