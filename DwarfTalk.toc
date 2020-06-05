@@ -2,6 +2,6 @@
 ## Title: DwarfTalk
 ## Notes: You're a Dwarf, Harry. Ported from Baobab's Dwarf-talk for Warhammer Age of Reckoning.
 ## SavedVariablesPerCharacter: DwarfTalk_Config
-## Version: 0.2
+## Version: 0.3
 ## Author: wizardfingers
 DwarfTalk.xml
