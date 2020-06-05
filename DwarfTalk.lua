@@ -463,12 +463,10 @@ DwarfTalk = {
 
 DwarfTalk.LowerCasePattern = function (s)
     s = string.gsub (s, "%a", function (c) return string.format("%s", string.lower(c)) end)
-    print(s)
     return s
 end
 DwarfTalk.UpperCasePattern = function (s)
     s = string.gsub (s, "%a", function (c) return string.format("%s", string.upper(c)) end)
-    print(s)
     return s
 end
 
@@ -500,9 +498,26 @@ DwarfTalk.Translate = function (original)
         elseif (oldword:match("%a") == upperoldword:match("%a")) then
             dwarfedword = dwarfedword:gsub("%a", string.upper, 1)
         end
-        print(dwarfedword)
 
         result = result .. " " .. dwarfedword
     end
-    print("finally:"..result)
+    return result;
+end
+
+local SendChatMessageAsADwarf
+local SendChatMessageHook
+SendChatMessageAsADwarf = function (msg, system, language, channel)
+    if (not msg) then
+        msg = ""
+    end
+    if (not system) then
+        system = "SAY"
+    end
+
+    SendChatMessageHook(DwarfTalk.Translate(msg), system, language, channel)
+end
+
+if (SendChatMessage ~= SendChatMessageAsADwarf) then
+    SendChatMessageHook = SendChatMessage
+    SendChatMessage = SendChatMessageAsADwarf
 end
