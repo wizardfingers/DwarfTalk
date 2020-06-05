@@ -3,4 +3,4 @@
 ## Notes: You're a Dwarf, Harry. Ported from Baobab's Dwarf-talk for Warhammer Age of Reckoning.
 ## Version: 0.1
 ## Author: wizardfingers
-DwarfTalk.lua
+DwarfTalk.xml

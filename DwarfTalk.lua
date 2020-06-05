@@ -504,20 +504,32 @@ DwarfTalk.Translate = function (original)
     return result;
 end
 
-local SendChatMessageAsADwarf
-local SendChatMessageHook
-SendChatMessageAsADwarf = function (msg, system, language, channel)
-    if (not msg) then
-        msg = ""
-    end
-    if (not system) then
-        system = "SAY"
+DwarfTalk_OnLoad = function ()
+    SLASH_DWARFTALK1 = "/dt"
+    SLASH_DWARFTALK2 = "/dwarftalk"
+    SlashCmdList["DWARFTALK"] = function (msg)
+        if not msg or string.format("%s", string.lower(msg)) == "help" then
+            print("DwarfTalk\nTurn on or off globally with /dwarftalk <on/off>\nDisable a channel with /dwarftalk disable <CHANNEL_NAME>\nEnable a disabled channel with /dwarftalk enable <CHANNEL_NAME>\nList all disabled channels with /dwarftalk disabled")
+        end
     end
 
-    SendChatMessageHook(DwarfTalk.Translate(msg), system, language, channel)
+    print("DwarfTalk loaded and ready to translate!");
 end
 
-if (SendChatMessage ~= SendChatMessageAsADwarf) then
-    SendChatMessageHook = SendChatMessage
-    SendChatMessage = SendChatMessageAsADwarf
-end
+-- local SendChatMessageAsADwarf
+-- local SendChatMessageHook
+-- SendChatMessageAsADwarf = function (msg, system, language, channel)
+--     if (not msg) then
+--         msg = ""
+--     end
+--     if (not system) then
+--         system = "SAY"
+--     end
+
+--     SendChatMessageHook(DwarfTalk.Translate(msg), system, language, channel)
+-- end
+
+-- if (SendChatMessage ~= SendChatMessageAsADwarf) then
+--     SendChatMessageHook = SendChatMessage
+--     SendChatMessage = SendChatMessageAsADwarf
+-- end
