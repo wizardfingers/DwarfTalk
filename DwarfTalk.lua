@@ -179,7 +179,7 @@ DwarfTalk = {
         ["go away"] = "off with ye",
         ["goblin"] = "small greenskin",
         ["goblins"] = "small greenskins",
-        ["god"] = "Grungni",
+        ["god"] = "the All Father",
         ["going to"] = "gonna",
         ["gotcha"] = "aye, I be understandin'",
         ["grats"] = "cheers",
@@ -580,7 +580,7 @@ DwarfTalk_OnLoad = function ()
     if not DwarfTalk_Config.ON then
         status = "|cFFFF0000OFF|r"
     end
-    DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.." |r loaded -- status:"..status);
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.." |r loaded -- STATUS:"..status.."|r\nLearn about configuration with /dt help.");
 end
 
 local DwarfTalk_SendChatMessage
@@ -593,8 +593,10 @@ DwarfTalk_SendChatMessage = function (msg, system, language, channel)
         if (not system) then
             system = "SAY"
         end
-        if (not DwarfTalk_HasValue(DwarfTalk_Config.DISABLEDCHANNELS, string.upper(system))) then
+        if (not DwarfTalk_HasValue(DwarfTalk_Config.DISABLEDCHANNELS, string.upper(system)) and string.sub(msg, 1,1) ~= "_") then
             msg = DwarfTalk.Translate(msg)
+        elseif string.sub(msg, 1,1) == "_" then
+            msg = string.sub(msg, 2, #msg)
         end
     end
     DwarfTalk_SendChatMessageHook(msg, system, language, channel)
