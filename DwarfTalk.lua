@@ -92,15 +92,21 @@ DwarfTalk_OnLoad = function ()
         if #options == 0 or options[1] == "help" then
             DwarfTalk_Config.DISABLEDCHANNELS = {}
             local formateddt = "|cFF00FF00/dt|r"
-            DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.."\n|r"..formateddt.." |cFFFFEE00on|r - enable DwarfTalk\n"..formateddt.." |cFFFFEE00off|r - disable DwarfTalk\n"..formateddt.." |cFFFFEE00list|r - list disabled channels\n"..formateddt.."|r |cFFFFEE00disable|r |cFFFF0000CHANNEL_NAME|r - disable a channel\n"..formateddt.." |cFFFFEE00enable|r |cFFFF0000CHANNEL_NAME|r - enable a disabled channel.")
+            local status = "|cFF00FF00ON|r"
+            if not DwarfTalk_Config.ON then
+                status = "|cFFFF0000OFF|r"
+            end
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk|r - STATUS: "..status.."\n"..formateddt.." |cFFFFEE00on|r - enable DwarfTalk\n"..formateddt.." |cFFFFEE00off|r - disable DwarfTalk\n"..formateddt.." |cFFFFEE00list|r - list disabled channels\n"..formateddt.."|r |cFFFFEE00disable|r |cFFFF0000CHANNEL_NAME|r - disable a channel\n"..formateddt.." |cFFFFEE00enable|r |cFFFF0000CHANNEL_NAME|r - enable a disabled channel.")
         elseif options[1] == "on" then
-            DEFAULT_CHAT_FRAME:AddMessage("DwarfTalk is now ACTIVE.")
+            DwarfTalk_Config.ON = true
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk|r is now |cFF00FF00ON|r.")
         elseif options[1] == "off" then
-            DEFAULT_CHAT_FRAME:AddMessage("DwarfTalk is now INACTIVE.")
+            DwarfTalk_Config.ON = false
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk|r is now |cFFFF0000OFF|r.")
         elseif options[1] == "list" then
             DEFAULT_CHAT_FRAME:AddMessage("Disabled Channels:")
             for key, value in ipairs(DwarfTalk_Config.DISABLEDCHANNELS) do
-                DEFAULT_CHAT_FRAME:AddMessage(">"..value)
+                DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00>|r|cFFFFEE00"..value.."|r")
             end
         elseif #options == 2 then
             local option2 = string.upper(options[2])
@@ -123,7 +129,7 @@ DwarfTalk_OnLoad = function ()
     if not DwarfTalk_Config.ON then
         status = "|cFFFF0000OFF|r"
     end
-    DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.." |r loaded -- STATUS:"..status.."|r\nLearn about configuration with /dt help.");
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF00C8FFDwarfTalk v"..DwarfTalk.version.." |r ready - STATUS: "..status)
 end
 
 local DwarfTalk_SendChatMessage
